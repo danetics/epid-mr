@@ -4,7 +4,7 @@ Subfunctions for calculating and applying MR-Steiger based identification of out
 import pandas as pd
 import numpy as np
 from scipy.stats import chi2
-import reg
+from . import reg
 
 # NOTE - other definitions of first-order weights can be used, but using inverse variance here for simplicity and consistency
 # NOTE - Q statistics are treated as Chi2

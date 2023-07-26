@@ -3,7 +3,7 @@ Top-level wrappers to run all univariable MR methods and sensitivity analyses
 '''
 
 import pandas as pd
-import hdf, proc, reg, med, rad, steig
+from . import hdf, proc, reg, med, rad, steig, inst
 
 def format_output(data, xpath, ypath) -> pd.DataFrame:
     data.insert(1, 'outcome', hdf.read_metadata(ypath)['trait'])

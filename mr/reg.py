@@ -17,7 +17,7 @@ def parse_results(res=None) -> dict:
         'beta': res.params[xname],
         'se': res.bse[xname],
         'pval': res.pvalues[xname],
-        'nvar': int(res.nobs)
+        'nvar': int(res.nobs),
         'resid': res.resid
     }
     if 'Intercept' in res.params:

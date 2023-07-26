@@ -11,7 +11,7 @@ def extract_variants(variants: list, store: pd.HDFStore) -> pd.DataFrame:
         extracted = extracted + [data]
     return pd.concat(extracted)
 
-def find_proxies(variants: list(tuple), proxymap: pd.DataFrame) -> pd.DataFrame:
+def find_proxies(variants: list, proxymap: pd.DataFrame) -> pd.DataFrame:
     '''
     For a list of variants as tuples[(chr, bp_b37, rsid)]
     Extract possible proxies from the proxies/main table of the HDFStore
