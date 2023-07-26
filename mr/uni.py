@@ -42,8 +42,11 @@ def run_radial(data):
 def run_analyses(xpath: str, ypath: str) -> pd.DataFrame:
     '''
     '''
-    instrument = hdf.load_signals(xpath)
-    data = hdf.extract_instrument(ypath, instrument)
+    with pd.HDFStore(xpath, 'r') as xstore:
+        signals = xstore.get('signals/main')
+        proxymap = xstore.get('proxies/main')
+    with pd.HDFStore(ypath, 'r') as ystore:
+        data = ins.get_analytic_dataframe(signals, proxymap, ystore)
     data = proc.preprocess_data(data)
     return {
         'main': format_output(run_main(data), xpath, ypath), 
