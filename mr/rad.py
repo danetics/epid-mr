@@ -38,7 +38,7 @@ def apply_radial_ivw(data: pd.DataFrame) -> tuple:
     cochranp = chi2.sf(cochranq, df=1) # one-sided
     outliers = data[cochranp <= 0.05]
     summary = {
-        'dropped': outliers['chrpos'].tolist(),
+        'dropped': outliers['rsid_x'].tolist(),
         'dropped_n': len(outliers),
         'qstat': round(cochranq.sum(), 2),
         'qstat_pval': chi2.sf(cochranq.sum(), df=len(data)-1)
@@ -52,7 +52,7 @@ def apply_radial_egger(data: pd.DataFrame) -> tuple:
     ruckerp = chi2.sf(ruckerq, df=1) # one-sided
     outliers = data[ruckerp <= 0.05]
     summary = {
-        'dropped': outliers['chrpos'].tolist(),
+        'dropped': outliers['rsid_x'].tolist(),
         'dropped_n': len(outliers),
         'qstat': round(ruckerq.sum(), 2),
         'qstat_pval': chi2.sf(ruckerq.sum(), df=len(data)-1)

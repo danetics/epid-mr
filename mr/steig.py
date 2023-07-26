@@ -40,7 +40,7 @@ def apply_steiger(data: pd.DataFrame) -> tuple:
     steigerz = calc_steiger_z(zgx, zgy, data['n_x'], data['n_y'])
     failures = data[(norm.sf(steigerz) <= 0.05) & (steigerz < 0)]
     summary = {
-        'dropped': failures['chrpos'].tolist(),
+        'dropped': failures['rsid_x'].tolist(),
         'dropped_n': len(failures)
     }
     return (data[~data.index.isin(failures.index)], summary)

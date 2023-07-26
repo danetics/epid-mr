@@ -11,7 +11,7 @@ def parse_results(res=None) -> dict:
     Parse or calculate required quantities from regression results
     Allows for one term and an optional intercept, returning a dict 
     '''
-    # If the regressiomn has not been run, return an empty dict 
+    # If the regression has not been run, return an empty dict 
     xname = res.params.keys()[0]
     term = {
         'beta': res.params[xname],

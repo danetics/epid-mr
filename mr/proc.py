@@ -7,8 +7,6 @@ Subfunctions to prepare top-level input data for univariable and multivariable a
 import pandas as pd
 import numpy as np
 
-
-
 def keep_reqcols(data):
     return data[['rsid_x','rsid_y','beta_x','se_x','pval_x','n_x','entity_x','beta_y','se_y','pval_y','n_y','entity_y']]
 
