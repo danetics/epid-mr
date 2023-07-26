@@ -74,12 +74,21 @@ def get_analytic_dataframe(signals: pd.DataFrame,
     with pd.HDFStore(ypath, 'r') as ystore:
         matches = extract_variants(siglist, ystore)
         needprox = [x for x in siglist if not x[1] in matches['rsid'].tolist()]
-        possprox = find_proxies(needprox, proxymap)
-        proxlist = list(zip(possprox['chr'], possprox['rsid_b']))
-        proxies = keep_best_proxy(extract_variants(proxlist, ystore), proxymap)
-        proxies['beta'] = orient_proxy_beta(proxies)
-        
-    out = pd.concat([merge_matches_onto_inst(signals, matches), merge_proxies_onto_inst(signals, proxies)])     
+        if len(needprox)>0:
+            possprox = find_proxies(needprox, proxymap)
+            proxlist = list(zip(possprox['chr'], possprox['rsid_b']))
+            if len(proxlist)>0:
+                proxies = extract_variants(proxlist, ystore)
+                if not proxies.empty:
+                    proxies = keep_best_proxy(proxies, proxymap)
+                    proxies['beta'] = orient_proxy_beta(proxies)
+                    proxies = merge_proxies_onto_inst(signals, proxies)
+    matches = merge_matches_onto_inst(signals, matches)
+    if 'proxies' in locals():
+        if not proxies.empty:
+            out = pd.concat([matches, proxies])
+    else:
+        out = matches
     return align_betas_exposure_increasing(out)
         
     
