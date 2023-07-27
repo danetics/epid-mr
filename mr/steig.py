@@ -54,7 +54,7 @@ def calc_ratio_pval(sey, bx, ratio):
     wald_z = abs(ratio)/wald_se # ratio already pre-calculated in input
     return (2 * norm.sf(wald_z))
     
-def get_failures(steigerz, waldp):
+def get_failures(data, steigerz, waldp):
     '''
     Subset per-variant failures, where we accept y->x causation based on sign(steigerz) and the steigerz p-value
     from logic in Hemani 2017, p16
@@ -65,13 +65,14 @@ def get_failures(steigerz, waldp):
 def apply_steiger(data: pd.DataFrame) -> tuple:
     '''
     '''
+    print(data.head())
     zgx = transform_r_to_zg(calc_r_from_f(calc_f_from_sumstats(data['pval_x'], data['n_x']), data['n_x']))
     zgy = transform_r_to_zg(calc_r_from_f(calc_f_from_sumstats(data['pval_y'], data['n_y']), data['n_y']))
     steigerz = calc_steiger_z(zgx, zgy, data['n_x'], data['n_y'])
     waldp = calc_ratio_pval(data['se_y'], data['beta_x'], data['ratio'])
-    failures = get_failures(steigerz, waldp)
+    failures = get_failures(data, steigerz, waldp)
     summary = {
         'dropped': failures['rsid_x'].tolist(),
         'dropped_n': len(failures)
     }
-    return (data[~(data['rsid'].isin(failures['rsid']))], summary)
+    return (data[~(data['rsid_x'].isin(failures['rsid_x']))], summary)
