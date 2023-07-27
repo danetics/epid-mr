@@ -4,11 +4,6 @@ Top-level wrappers to run all univariable MR methods and sensitivity analyses
 
 import pandas as pd
 from . import hdf, proc, reg, med, rad, steig, inst
-
-def drop_palindromes(data):
-    data['alleles'] = list(zip(data['effect_allele'], data['other_allele']))
-    palindromic = [('A','T'),('T','A'),('C','G'),('G','C')]
-    return data[~(data['alleles'].isin(palindromic))]
     
 def format_output(data, xpath, ypath) -> pd.DataFrame:
     data.insert(1, 'outcome', hdf.read_metadata(ypath)['trait'])
