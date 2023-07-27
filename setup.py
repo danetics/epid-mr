@@ -6,5 +6,5 @@ setup(
     description='Tools to run python-implemented MR models using standardised HDF input',
     url='https://github.com/danetics/epid-mr',
     author='Daniel Wright',
-    install_requires=['pandas', 'numpy', 'h5py','statsmodels','robustats','scipy>=1.10.1'],
+    install_requires=['pandas', 'numpy', 'h5py','statsmodels','robustats','scipy>=1.10.1', 'pytables'],
 )
