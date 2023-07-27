@@ -44,7 +44,6 @@ def run_analyses(xpath: str, ypath: str) -> pd.DataFrame:
     '''
     with pd.HDFStore(xpath, 'r') as xstore:
         signals = xstore.get('signals/main')
-        signals = drop_palindromes(signals)
         proxymap = xstore.get('proxies/main')
     with pd.HDFStore(ypath, 'r') as ystore:
         data = inst.get_analytic_dataframe(signals, proxymap, ystore)
