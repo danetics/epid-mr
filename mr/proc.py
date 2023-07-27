@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 def keep_reqcols(data):
-    return data[['rsid_x','rsid_y','beta_x','se_x','pval_x','n_x','entity_x','beta_y','se_y','pval_y','n_y','entity_y']]
+    return data[['rsid_x','rsid_y','beta_x','se_x','pval_x','n_x','beta_y','se_y','pval_y','n_y']]
 
 def build_chrpos(chr: pd.Series,
                  bp: pd.Series) -> pd.Series:
