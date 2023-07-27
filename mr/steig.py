@@ -60,7 +60,7 @@ def get_failures(data, steigerz, waldp):
     from logic in Hemani 2017, p16
     '''
     steigerp = 2 * norm.sf(steigerz) # Steiger's Z is normally distributed
-    return data[((steigerp <= 0.05) & (steigerz < 0) & (waldp <= 0.05))]
+    return data[((steigerp < 0.05) & (steigerz < 0) & (waldp < 0.05))]
 
 def apply_steiger(data: pd.DataFrame) -> tuple:
     '''
