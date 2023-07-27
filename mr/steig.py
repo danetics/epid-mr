@@ -1,5 +1,6 @@
 '''
 Functions to calculate Steiger-MR Z scores and define Steiger failures
+Logic is based on original Hemani 2017 paper, plus associated R package
 '''
 
 import pandas as pd
@@ -38,7 +39,7 @@ def apply_steiger(data: pd.DataFrame) -> tuple:
     zgx = transform_r_to_zg(calc_r_from_f(calc_f_from_sumstats(data['pval_x'], data['n_x']), data['n_x']))
     zgy = transform_r_to_zg(calc_r_from_f(calc_f_from_sumstats(data['pval_y'], data['n_y']), data['n_y']))
     steigerz = calc_steiger_z(zgx, zgy, data['n_x'], data['n_y'])
-    failures = data[(norm.sf(steigerz) <= 0.05) & (steigerz < 0)]
+    failures = data[((norm.sf(steigerz) <= 0.05) & (steigerz < 0))]
     summary = {
         'dropped': failures['rsid_x'].tolist(),
         'dropped_n': len(failures)
