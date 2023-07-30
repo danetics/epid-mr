@@ -1,78 +1,53 @@
 '''
-Top-level wrappers to run all univariable MR methods and sensitivity analyses
+Top-level module to run univariaable MR models
 '''
 
-import pandas as pd
-from . import hdf, proc, reg, med, rad, steig, inst
-    
-def format_output(data, xpath, ypath) -> pd.DataFrame:
-    data.insert(1, 'outcome', hdf.read_metadata(ypath)['trait'])
-    data.insert(1, 'exposure', hdf.read_metadata(xpath)['trait'])
-    data = data.rename(columns={'index': 'method'})
-    return data
+import statsmodels.formula.api as smf
 
-def run_main(data: pd.DataFrame) -> pd.DataFrame:
-    ''' Run univariable MR analyses using all methods, without filtering '''
-    res = {
-        'MR-IVW': reg.constrained_wls(data['beta_x'], data['beta_y'], weights=data['weight']),
-        'MR-Egger': reg.unconstrained_wls(data['beta_x'], data['beta_y'], weights=data['weight']),
-        'MR-WM':med.run_wm(data['ratio'], data['weight'])
-    }
-    return pd.DataFrame.from_dict(res, orient='index').reset_index()
-                 
-def run_steiger(data):
-    ''' Run regression-based MRs using only variants passing MR-Steiger filtering '''
-    steiger = steig.apply_steiger(data)
-    res = {
-        'MR-IVW': (reg.constrained_wls(steiger[0]['beta_x'], steiger[0]['beta_y'], weights=(steiger[0]['weight']))| steiger[1]),
-        'MR-Egger': (reg.unconstrained_wls(steiger[0]['beta_x'], steiger[0]['beta_y'], weights=(steiger[0]['weight'])) | steiger[1])
-    }
-    return pd.DataFrame.from_dict(res, orient='index').reset_index()
 
-def run_radial(data):
-    ''' Run regression-based MRs using only variants passing MR-Radial filtering'''
-    radivw = rad.apply_radial_ivw(data)
-    radegg = rad.apply_radial_egger(data)
-    res = {
-        'MR-IVW': (reg.constrained_wls(radivw[0]['beta_x'], radivw[0]['beta_y'], weights=(radivw[0]['weight'])) | radivw[1]),
-        'MR-Egger': (reg.unconstrained_wls(radegg[0]['beta_x'], radegg[0]['beta_y'], weights=(radegg[0]['weight'])) | radegg[1])
-    }
-    return pd.DataFrame.from_dict(res, orient='index').reset_index()
-
-def run_analyses(xpath: str, ypath: str) -> pd.DataFrame:
-    '''
-    '''
-    with pd.HDFStore(xpath, 'r') as xstore:
-        signals = xstore.get('signals/main')
-        proxymap = xstore.get('proxies/main')
-    with pd.HDFStore(ypath, 'r') as ystore:
-        data = inst.get_analytic_dataframe(signals, proxymap, ystore)
-    data = proc.preprocess_data(data)
+def run_main(data: pd.DataFrame) -> dict:
     return {
-        'main': format_output(run_main(data), xpath, ypath), 
-        'steiger': format_output(run_steiger(data), xpath, ypath), 
-        'radial': format_output(run_radial(data), xpath, ypath)
+        'ivw': smf.wls('beta_y ~ beta_x - 1', data, weights=data['se_y']**-2).fit(),
+        'egger': smf.wls('beta_y ~ beta_x', data, weights=data['se_y']**-2).fit(),
+        'wm': models.med.run_wm(data['ratio'], weights=data['ratio_se']**-2)
     }
-        
 
-#----->>>>>----->>>>> MAIN <<<<<-----<<<<<-----
+def run_steiger(data: pd.DataFrame): 
+    data['steiger_fail'] = models.steig.flag_failures(data)
+    if any(data['steiger_fail']):
+        if len(data[~data['steiger_fail']]) >= 5:
+            res = {
+                'ivw_steig_filtered': smf.wls('beta_y ~ beta_x - 1', data, subset=(~data['steiger_fail']), weights=data['se_y']**-2).fit(),
+            }
+            return data, res
+    return data, dict()
 
-def run_mr(xpath: str,
-           ypath: str,
-           bidirectional=False):
+def run_radial(data: pd.DataFrame):
+    data['radial_fail'] = models.radial.flag_failures(data)
+    res = {
+        'radial': smf.ols('ratio/ratio_se ~ (1/ratio_se) - 1', data, subset=(~data['radial_fail'])).fit(),
+        'egger_radial': smf.ols('ratio/ratio_se ~ (1/ratio_se)', data, subset=(~data['radial_fail'])).fit()
+    }
+    if any(data['radial_fail']):
+        if len(data[~data['radial_fail']]) >= 5:
+            filt = {
+                'ivw_radial_filtered': smf.wls('beta_y ~ beta_x - 1', data, subset=(~data['radial_fail']), weights=data['se_y']**-2).fit()
+                'egger_radial_filtered': smf.wls('beta_y ~ beta_x', data, subset=(~data['radial_fail']), weights=data['se_y']**-2).fit()
+            }
+            return data, {**res, **filt}
+    return data, res
+
+def run_analyses(data):
     '''
+    For a given preprocessed dataframe, add Steiger and Radial flags and run all models
+    Return the modified data and a dict of results
     '''
-    res_xy = run_analyses(xpath, ypath)
-    if bidirectional:
-        res_yx = run_analyses(ypath, xpath)
-        return (res_xy, res_yx) 
-    return res_xy
-               
+    main = run_main(data)
+    data, steiger = run_steiger(data)
+    data, radial = run_radial(data)
+    return data, {**main, **steiger, **radial}
+
     
-
-
-
-
-
-
-               
+    
+        
+    

@@ -10,7 +10,7 @@ from . import reg
 # Logic here is based on Bowden 2018 and the source code for the accompanying RadialMR R package (lines are permalinked)
 # The RadialMR package uses iterative radial regressions, but this is not mentioned in the originating paper, so it is not implemented here 
 # Many definitions of weights can be used, but using 'first order' inverse variance here throughout for simplicity
-# Q statistics follow a chi2 distribution, and p-values are attained using R's pnorm(lower.tail=FALSE); inverse CDF
+# Q statistics follow a chi2 distribution, and p-values are attained using R's pchisq(lower.tail=FALSE); inverse CDF
 # chi2.sf() == survival function == 1-CDF is the equivalent, see https://albertotb.com/Equivalence-between-distribution-functions-in-R-and-Python/ 
 # the ratio measure used here == Bj in the paper == per-variant effect size
 
