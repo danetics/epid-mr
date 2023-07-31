@@ -3,15 +3,19 @@
 
 from .reference import fonts
 
-def apply_format(xlabel, ylabel, counts, qstats):
-    '''
-    Apply standard font formatting, create legend and display text
-    '''
-    plt.legend(fontsize=6, labelcolor='black', fancybox=True)
-    plt.text(0, 1, '\n'.join([counts, qstats], fontdict=fonts['normal'])
-    plt.axhline(y=0, linestyle='dotted', linewidth=.5, color='grey')
-    plt.tick_params(labelsize=6)
-    plt.xlabel(xlabel, fontdict=plotfont)
-    plt.ylabel(ylabel, fontdict=plotfont)
+def style_axes(xlabel, ylabel, ax):
+    ax.tick_params(labelsize=6)
+    ax.xlabel(xlabel, fontdict=plotfont)
+    ax.ylabel(ylabel, fontdict=plotfont)
+
+def add_horizontal_zeroline(ax):
+    ax.axhline(y=0, linestyle='dotted', linewidth=.5, color='grey')
+                   
+def add_legend(ax):
+    ax.legend(fontsize=6, labelcolor='black', fancybox=True)
+
+def add_textbox(counts, qstat, ax):
+    ax.text(0, 1, '\n'.join([counts, qstats], fontdict=fonts['normal'])
+    
     
     
