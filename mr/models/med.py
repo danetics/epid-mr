@@ -14,8 +14,8 @@ from statsmodels.formula import api as smf
 def get_weighted_median(sorted: pd.DataFrame) -> float:
     # Easier to use full DF so that values are sorted together without additional processing
     sorted['cumulative_weight'] = np.cumsum(sorted['ratio_se']**-2)
-    totalweight = sorted['cumulative_weight'].sum
-    median_idx = np.searchsorted(sorted['ratio'], totalweight/2)
+    totalweight = (sorted['ratio_se']**-2).sum()
+    median_idx = sorted[sorted['cumulative_weight'] >= (totalweight/2)].index[0]
     if totalweight%2==1:
         return sorted['ratio'][median_idx]
     return (sorted['ratio'][median_idx-1] + sorted['ratio'][median_idx+1])/2
@@ -23,7 +23,7 @@ def get_weighted_median(sorted: pd.DataFrame) -> float:
 def bootstrapped_se(sorted: pd.DataFrame) -> float:
     # Can simply bootstrap the sorted vector of (ratio * weight) and calculate SE        
     res = bootstrap(((sorted['ratio'] * sorted['ratio_se']**-2),), np.median, method='percentile')
-    return res.standarderror
+    return res.standard_error
 
 # ----->>>>> Function 
 
@@ -31,7 +31,7 @@ def run_wm(data: pd.DataFrame) -> dict:
     ''' 
     Weighted median MR with specified weights
     '''
-    sorted = data.sort_values('ratio')
+    sorted = data.sort_values('ratio').reset_index(drop=True)
     return {
         'beta': get_weighted_median(sorted),
         'se': bootstrapped_se(sorted),
