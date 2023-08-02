@@ -6,6 +6,8 @@ import numpy as np
 import statsmodels.formula.api as smf
 from scipy.stats import chi2
 from .models import med, steig, het
+from .plot import panel
+from sumstats.extract import instrument
 
 def run_main(data: pd.DataFrame) -> dict:
     return {
@@ -49,6 +51,20 @@ def run_analyses(data):
     data['cochranq_ivw_radial_filtered'] = het.calc_cochranq_per_variant(data[~data['radial_fail']], radial['ivw_radial_filtered'].params['beta_x'], return_pvals=False)
     # Rucker Q could also be calculated here for main and radial filtered models, but not bothering
     return data, {**main, **steiger, **radial}
+
+def from_hdfpaths(xpath: str, 
+                  ypath: str, 
+                  get_proxies: True,
+                  omitx = None,
+                  rsidsx = None,
+                  omity = None,
+                  rsidsy = None):
+    # When there are multiple signals or instrument tables we can also add in an option for that, to pass to sumstats.extract.instrument
+    data_xy = instrument.get_analytic_dataframe(xpath, ypath, get_proxies, omitx, rsidsx)
+    data_xy = instrument.get_analytic_dataframe(ypath, xpath, get_proxies, omity, rsidsy)
+    proc_xy, res_xy = run_analyses(data_xy)
+    proc_yx, res_yx = run_analyses(data_yx)
+    panel.mr_panel(proc_xy, proc_yx, res_xy, res_yx)
     
     
 
