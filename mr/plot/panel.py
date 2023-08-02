@@ -36,6 +36,6 @@ def mr_panel(dataxy, datayx, resxy, resyx, outdir='.', outname=None):
                       title='Reversed Main Models',
                       ax = ax4)
     plt.tight_layout()
-    outname = f"{dataxy.attrs['xname'].lower().replace(':','.')}.{dataxy.attrs['yname'].lower().replace(':','.')}.unimr.plots" if outname is None else outname
+    outname = f"{dataxy.attrs['xname'].lower().replace(': ','.')}.{dataxy.attrs['yname'].lower().replace(': ','.')}.unimr.plots" if outname is None else outname
     plt.savefig(os.path.join(outdir, f'{outname}.png'), bbox_inches='tight')
     
