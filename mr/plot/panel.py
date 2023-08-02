@@ -1,7 +1,8 @@
+import os
 from . import scatter
 import matplotlib.pyplot as plt
 
-def mr_panel(dataxy, datayx, resxy, resyx):
+def mr_panel(dataxy, datayx, resxy, resyx, outdir='.', outname=None):
     '''
     Wrapper to get 2x2 plot panel
     '''
@@ -35,5 +36,6 @@ def mr_panel(dataxy, datayx, resxy, resyx):
                       title='Reversed Main Models',
                       ax = ax4)
     plt.tight_layout()
-    plt.show()
+    outname = f"{dataxy.attrs['xname'].lower().replace(':','.')}.{dataxy.attrs['yname'].lower().replace(':','.')}.unimr.plots" if outname is None else outname
+    plt.savefig(os.path.join(outdir, f'{outname}.png'), bbox_inches='tight')
     
