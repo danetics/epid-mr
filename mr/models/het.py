@@ -13,7 +13,7 @@ from scipy.stats import chi2
 # Q statistics follow a chi2 distribution, and p-values are attained using R's pchisq(lower.tail=FALSE); inverse CDF
 # chi2.sf() == survival function == 1-CDF is the equivalent: https://albertotb.com/Equivalence-between-distribution-functions-in-R-and-Python/ 
 
-def calc_cochranq_per_variant(data: pd.DataFrame, fitted_beta: float):
+def calc_cochranq_per_variant(data: pd.DataFrame, fitted_beta: float, return_pvals=True):
     '''
     Calculate row-wise Cochran's Q relative to a fitted regression slope
     Can be used for radial and normal Q-statistics: all that changes is model beta (summary effect size term)
@@ -22,7 +22,9 @@ def calc_cochranq_per_variant(data: pd.DataFrame, fitted_beta: float):
     # https://github.com/WSpiller/RadialMR/blob/abe00170076284cb79ae711c96d3832da3879267/R/ivw_radial.R#L402
     cochranq = (data['ratio_se']**-2) * (data['ratio']-fitted_beta)**2
     cochranp = chi2.sf(cochranq, 1)
-    return cochranq, cochranp
+    if return_pvals:
+        return cochranq, cochranp
+    return cochranq
 
 def calc_ruckerq_per_variant(data: pd.DataFrame, eggrad_res):
     '''

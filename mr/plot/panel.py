@@ -30,9 +30,9 @@ def mr_panel(dataxy, datayx, resxy, resyx):
                       ax=ax3)
     # Bottom right (ax4) is the reverse MR standard scatter.  As for ax1 but inverting x and y
     scatter.draw_plot(datayx, xcol='beta_x', ycol='beta_y', xerr='se_x', yerr='se_y', highlight='steiger_fail', res=resyx,
-                      xlabel=dataxy.attrs['xname'], 
-                      ylabel=dataxy.attrs['yname'],
-                      title='Inverted Main Models',
+                      xlabel=datayx.attrs['xname'], 
+                      ylabel=datayx.attrs['yname'],
+                      title='Reversed Main Models',
                       ax = ax4)
     plt.tight_layout()
     plt.show()
