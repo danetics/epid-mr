@@ -45,7 +45,6 @@ def run_analyses(data):
     main = run_main(data)
     data, steiger = run_steiger(data)
     data, radial = run_radial(data)
-    print(data)
     data['cochranq_ivw'] = het.calc_cochranq_per_variant(data, main['ivw'].params['beta_x'], return_pvals=False)
     data['cochranq_ivw_radial_filtered'] = het.calc_cochranq_per_variant(data[~data['radial_fail']], radial['ivw_radial_filtered'].params['beta_x'], return_pvals=False)
     # Rucker Q could also be calculated here for main and radial filtered models, but not bothering
