@@ -18,10 +18,11 @@ def calc_cochranq_per_variant(data: pd.DataFrame, fitted_beta: float):
     Calculate row-wise Cochran's Q relative to a fitted regression slope
     Can be used for radial and normal Q-statistics: all that changes is model beta (summary effect size term)
     '''
-    # Bowden 2018, Box 4 equation 2
+    # Bowden 2018, Box 4 equation 2: normal Q statistic (weighted sum of squared mean differences)
     # https://github.com/WSpiller/RadialMR/blob/abe00170076284cb79ae711c96d3832da3879267/R/ivw_radial.R#L402
     cochranq = (data['ratio_se']**-2) * (data['ratio']-fitted_beta)**2
-    return cochranq
+    cochranp = chi2.sf(cochranq, 1)
+    return cochranq, cochranp
 
 def calc_ruckerq_per_variant(data: pd.DataFrame, eggrad_res):
     '''
@@ -29,7 +30,8 @@ def calc_ruckerq_per_variant(data: pd.DataFrame, eggrad_res):
     '''
     # Bowden 2018, Box 4 equation 4
     ruckerq = (data['ratio_se']**-2) * (data['ratio']-(eggrad_res.params['Intercept']/data['ratio_se']**-1)-eggrad_res.params['ratio_inv_se'])**2
-    return ruckerq
+    ruckerp = chi2.sf(ruckerq, 1)
+    return ruckerq, ruckerp
 
 def calc_summary_heterogeneity_statistics(qstats: pd.Series):
     '''

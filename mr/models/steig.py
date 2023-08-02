@@ -57,8 +57,10 @@ def flag_failures(data: pd.DataFrame) -> pd.Series:
     
     # Define failures based on Hemani 2017, p16
     # Use steigerp, sign(steigerz) and the original Wald ratio pvalue
-    steigerp = 2 * norm.sf(steigerz)
-    ratiop = 2 * norm.sf(np.abs(data['ratio']/data['ratio_se']))
+    # Use one-sided pvalue on abs(steigerz) - not certain but feels right (maybe check)
+    steigerp = norm.sf(np.abs(steigerz))
+    # https://github.com/explodecomputer/causal-directions/blob/916f528cbf8d1ccd9bc7eac9f33f6b658e683ded/scripts/mr_directionality_analysis.R#L150
+    ratiop = 2*norm.sf(np.abs(data['ratio_z']))
     return(np.where(((steigerp < 0.05) & (steigerz < 0) & (ratiop < 0.05)), True, False))
     
     

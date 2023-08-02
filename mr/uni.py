@@ -27,11 +27,9 @@ def run_radial(data: pd.DataFrame):
         'radial': smf.ols('ratio_z ~ ratio_inv_se - 1', data).fit(),
         'egger_radial': smf.ols('ratio_z ~ ratio_inv_se', data).fit()
     }
-    data['cochranq_radial'] = het.calc_cochranq_per_variant(data, res['radial'].params['ratio_inv_se'])
-    data['ruckerq_radial'] = het.calc_ruckerq_per_variant(data, res['egger_radial'])
-    data['radial_fail'] = np.where(((chi2.sf(data['cochranq_radial'], len(data)-1)<0.05) | 
-                                    (chi2.sf(data['ruckerq_radial'], len(data)-1)<0.05)), 
-                                    True, False)
+    data['cochranq_radial'], cochradp = het.calc_cochranq_per_variant(data, res['radial'].params['ratio_inv_se'])
+    data['ruckerq_radial'], ruchradp = het.calc_ruckerq_per_variant(data, res['egger_radial'])
+    data['radial_fail'] = np.where(((cochradp < 0.05) | (ruckradp < 0.05)), True, False)
     radial_filt = data[~data['radial_fail']]
     filt = {
         'ivw_radial_filtered': smf.wls('beta_y ~ beta_x - 1', radial_filt, weights=radial_filt['se_y']**-2).fit(),
