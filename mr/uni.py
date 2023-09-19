@@ -54,16 +54,18 @@ def run_analyses(data):
 
 def from_hdfpaths(xpath: str, 
                   ypath: str, 
+                  xsignalkey = 'main',
+                  ysignalkey = 'main',
                   get_proxies=True,
                   omitx = None,
                   rsidsx = None,
                   omity = None,
                   rsidsy = None):
     # When there are multiple signals or instrument tables we can also add in an option for that, to pass to sumstats.extract.instrument
-    data_xy = instrument.get_analytic_dataframe(xpath, ypath, get_proxies, omitx, rsidsx)
-    #data_yx = instrument.get_analytic_dataframe(ypath, xpath, get_proxies, omity, rsidsy)
+    data_xy = instrument.get_analytic_dataframe(xpath, ypath, xsignalkey, get_proxies, omitx, rsidsx)
+    data_yx = instrument.get_analytic_dataframe(ypath, xpath, ysignalkey, get_proxies, omity, rsidsy)
     proc_xy, res_xy = run_analyses(data_xy)
-    #proc_yx, res_yx = run_analyses(data_yx)
+    proc_yx, res_yx = run_analyses(data_yx)
     panel.mr_panel(proc_xy, None, res_xy, None)
     
     
