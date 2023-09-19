@@ -66,7 +66,7 @@ def from_hdfpaths(xpath: str,
     data_yx = instrument.get_analytic_dataframe(ypath, xpath, ysignalkey, get_proxies, omity, rsidsy)
     proc_xy, res_xy = run_analyses(data_xy)
     proc_yx, res_yx = run_analyses(data_yx)
-    panel.mr_panel(proc_xy, None, res_xy, None)
+    panel.mr_panel(proc_xy, proc_yx, res_xy, res_yx)
     
     
 
