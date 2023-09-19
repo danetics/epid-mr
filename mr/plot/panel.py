@@ -30,11 +30,11 @@ def mr_panel(dataxy, datayx, resxy, resyx, outdir='.', outname=None):
                       reglines=['ivw_radial_filtered','egger_radial_filtered'],
                       ax=ax3)
     # Bottom right (ax4) is the reverse MR standard scatter.  As for ax1 but inverting x and y
-    #scatter.draw_plot(datayx, xcol='beta_x', ycol='beta_y', xerr='se_x', yerr='se_y', highlight='steiger_fail', res=resyx,
-    #                  xlabel=datayx.attrs['xname'], 
-    #                  ylabel=datayx.attrs['yname'],
-    #                  title='Reversed Main Models',
-    #                  ax = ax4)
+    scatter.draw_plot(datayx, xcol='beta_x', ycol='beta_y', xerr='se_x', yerr='se_y', highlight='steiger_fail', res=resyx,
+                      xlabel=datayx.attrs['xname'], 
+                      ylabel=datayx.attrs['yname'],
+                      title='Reversed Main Models',
+                      ax = ax4)
     plt.tight_layout()
     outname = f"{dataxy.attrs['xname'].lower().replace(': ','.')}.{dataxy.attrs['yname'].lower().replace(': ','.')}.unimr.plots" if outname is None else outname
     plt.savefig(os.path.join(outdir, f'{outname}.png'), bbox_inches='tight')

@@ -52,8 +52,11 @@ def draw_plot(data: pd.DataFrame,
         ax.plot(data[xcol], res[model].fittedvalues, linewidth=1, 
                 label=labels.generate_legend_label(res[model], model), 
                 color=plotcolours[model])
+    # Because we are subsetting data, lines drawn with the fitted values can look chaotic as they jump around the x axis
     for model in [x for x in reglines if 'filtered' in x]:
-        ax.plot(data[xcol][~data[highlight]], res[model].fittedvalues, linewidth=1, 
+        plotdata = data[~data[highlight]]
+        fitted = res[model].fittedvalues
+        ax.plot(plotdata[xcol], fitted[fitted.index.isin(plotdata.index)], linewidth=1, 
                 label=labels.generate_legend_label(res[model], model), 
                 color=plotcolours[model])
     if 'wm' in reglines:
